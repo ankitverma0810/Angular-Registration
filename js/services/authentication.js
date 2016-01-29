@@ -1,11 +1,33 @@
-myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', 'FIREBASE_URL', function($rootScope, $firebaseAuth, FIREBASE_URL) {
+myApp.factory('Authentication', ['$rootScope', '$location', '$firebaseAuth', '$firebaseObject', 'FIREBASE_URL', function($rootScope, $location, $firebaseAuth, $firebaseObject, FIREBASE_URL) {
 
 	var ref = new Firebase(FIREBASE_URL);
 	var auth = $firebaseAuth(ref);
 
+	auth.$onAuth(function(authUser) {
+		//console.log(authUser); will return loggedIn user with uid and token
+		if(authUser) {
+			var userRef = new Firebase(FIREBASE_URL+'users/'+authUser.uid);
+			var userObj = $firebaseObject(userRef);
+			$rootScope.currentUser = userObj;
+		} else {
+			$rootScope.currentUser = '';
+		}
+	});
+
 	return {
 		login: function(user) {
-			$rootScope.message = "Welcome " + user.email; 
+			auth.$authWithPassword({
+				email: user.email,
+				password: user.password
+			}).then(function(regUser) {
+				$location.path('/success');
+			}).catch(function(error) {
+				$rootScope.message = error.message;
+			});
+		},
+
+		logout: function() {
+			return auth.$unauth();
 		},
 
 		register: function(user) {
