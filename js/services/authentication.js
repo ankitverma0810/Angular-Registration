@@ -14,13 +14,13 @@ myApp.factory('Authentication', ['$rootScope', '$location', '$firebaseAuth', '$f
 		}
 	});
 
-	return {
+	var authObject =  {
 		login: function(user) {
 			auth.$authWithPassword({
 				email: user.email,
 				password: user.password
 			}).then(function(regUser) {
-				$location.path('/success');
+				$location.path('/meetings');
 			}).catch(function(error) {
 				$rootScope.message = error.message;
 			});
@@ -30,11 +30,16 @@ myApp.factory('Authentication', ['$rootScope', '$location', '$firebaseAuth', '$f
 			return auth.$unauth();
 		},
 
+		requireAuth: function() {
+			return auth.$requireAuth();
+		},
+
 		register: function(user) {
 			auth.$createUser({
 				email: user.email,
 				password: user.password
 			}).then(function(regUser) {
+
 				//storing information to user table in firebase
 				var regRef = new Firebase(FIREBASE_URL+'users').child(regUser.uid).set({
 					date: Firebase.ServerValue.TIMESTAMP,
@@ -43,12 +48,17 @@ myApp.factory('Authentication', ['$rootScope', '$location', '$firebaseAuth', '$f
 					lastname: user.lastname,
 					email: user.email
 				});
-				$rootScope.message = "Hi " + user.email + ', Thanks for registering'; 
+				
+				//logging user into our app
+				authObject.login(user);
+
 			}).catch(function(error) {
 				console.log(error);
 				$rootScope.message = error.message;
 			});
 		}
 	}
+
+	return authObject;
 
 }]);
