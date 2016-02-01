@@ -10,6 +10,12 @@ myApp.run(['$rootScope', '$location', function($rootScope, $location) {
 			$location.path('/login');
 		}
 	});
+
+	$rootScope.$on('$routeChangeStart', function(event, next, previous) { 
+		if (next.$$route && next.$$route.resolve) {
+		}
+	});
+
 }]);
 
 myApp.config(['$routeProvider', function($routeProvider) {
