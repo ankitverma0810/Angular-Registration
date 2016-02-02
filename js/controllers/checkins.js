@@ -1,4 +1,4 @@
-myApp.controller('CheckInsController', ['$scope', '$rootScope', '$firebaseObject', '$firebaseArray', '$routeParams', 'FIREBASE_URL',  function($scope, $rootScope, $firebaseObject, $firebaseArray, $routeParams, FIREBASE_URL) {
+myApp.controller('CheckInsController', ['$scope', '$rootScope', '$firebaseObject', '$firebaseArray', '$routeParams', '$location', 'FIREBASE_URL', function($scope, $rootScope, $firebaseObject, $firebaseArray, $routeParams, $location, FIREBASE_URL) {
 
 	$scope.whichmeeting = $routeParams.mId;
 	$scope.whichuser = $routeParams.uId;
@@ -20,5 +20,11 @@ myApp.controller('CheckInsController', ['$scope', '$rootScope', '$firebaseObject
 		checkinsInfo.$add(myData).then(function() {
 			$location.path('/checkins/'+$scope.whichuser+'/'+$scope.whichmeeting+'/checkinsList');
 		});
+	};
+
+	$scope.deleteCheckin = function(id) {
+		var refDel = new Firebase(FIREBASE_URL+'users/'+$scope.whichuser+'/meetings/'+$scope.whichmeeting+'/checkins/'+id);
+		var record = $firebaseObject(refDel);
+		record.$remove(id);
 	};
 }]);
