@@ -31,7 +31,7 @@ myApp.factory('Authentication', ['$rootScope', '$location', '$firebaseAuth', '$f
 		},
 
 		requireAuth: function() {
-			console.log(auth.$requireAuth());
+			//console.log(auth.$requireAuth());
 			return auth.$requireAuth();
 		},
 
